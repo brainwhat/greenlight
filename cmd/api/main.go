@@ -1,16 +1,13 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"database/sql"
 	"flag"
 	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -35,11 +32,10 @@ func main() {
 
 	var cfg config
 
-	SetENV()
-
 	flag.IntVar(&cfg.port, "port", 4000, "API server port")
 	flag.StringVar(&cfg.env, "env", "dev", "Current environment (dev/stage/prod")
-	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("dsn"), "PostgreSQL DSN")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("GREENLIGHT_DB_DSN"), "PostgreSQL DSN")
+
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -94,26 +90,4 @@ func openDB(cfg config) (*sql.DB, error) {
 	}
 
 	return db, nil
-}
-
-// Read .env and set config variables (so far only dsn)
-func SetENV() {
-
-	envFile, err := os.Open("./.env")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	defer envFile.Close()
-
-	scanner := bufio.NewScanner(envFile)
-
-	for scanner.Scan() {
-		name, value, _ := strings.Cut(scanner.Text(), "=")
-		os.Setenv(name, value)
-	}
-
-	// Check if there any errors during scanning
-	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
-	}
 }
