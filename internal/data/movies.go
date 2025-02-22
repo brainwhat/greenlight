@@ -111,16 +111,16 @@ func (m MovieModel) Delete(id int64) error {
 }
 
 func ValidateMovie(v *validator.Validator, movie *Movie) {
-	v.Check(movie.Title != "", "title", "title cannot be empty")
-	v.Check(len(movie.Title) < 500, "title", "title must be under 500 characters")
+	v.Check(movie.Title != "", "title", "cannot be empty")
+	v.Check(len(movie.Title) < 500, "title", "must be under 500 characters")
 
-	v.Check(movie.Year != 0, "year", "must provide year")
-	v.Check(movie.Year > 1888 && movie.Year <= int32(time.Now().Year()), "year", "incorrect year")
+	v.Check(movie.Year != 0, "year", "cannpt be empty")
+	v.Check(movie.Year > 1888 && movie.Year <= int32(time.Now().Year()), "year", "must be between 1888 and today")
 
-	v.Check(movie.Runtime > 0, "runtime", "runtime must be a positive integer")
+	v.Check(movie.Runtime > 0, "runtime", "must be a positive integer")
 
-	v.Check(movie.Genres != nil, "genres", "genres cannot be empty")
-	v.Check(validator.CheckForEmptyStrings(movie.Genres), "genres", "genres cannot be empty")
-	v.Check(len(movie.Genres) > 0 && len(movie.Genres) <= 5, "genres", "movie must have between 1 and 5 genres")
-	v.Check(validator.Unique(movie.Genres), "genres", "genres must be unique")
+	v.Check(movie.Genres != nil, "genres", "cannot be empty")
+	v.Check(validator.CheckForEmptyStrings(movie.Genres), "genres", "cannot be empty")
+	v.Check(len(movie.Genres) > 0 && len(movie.Genres) <= 5, "genres", "must have between 1 and 5 genres")
+	v.Check(validator.Unique(movie.Genres), "genres", "must be unique")
 }
