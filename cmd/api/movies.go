@@ -133,8 +133,12 @@ func (app *application) updateMovieHandler(w http.ResponseWriter, r *http.Reques
 
 	err = app.models.Movies.Update(movie)
 	if err != nil {
-		app.serverErrorResponse(w, r, err)
-		return
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictRecspnse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
 	}
 
 	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
